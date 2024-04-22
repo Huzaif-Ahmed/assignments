@@ -18,4 +18,33 @@ const path = require('path');
 const app = express();
 
 
+
+app.listen(3000, () => { 
+  console.log('Server is running on http://localhost:3000');
+}
+);
+
+app.get('/files', (req, res) => {
+  const files = fs.readdirSync('./files');
+  res.json(files);
+}); 
+
+app.get('/file/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(__dirname, './files/', filename);
+  if (fs.existsSync(filePath)) {
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    res.send(fileContent);
+  } else {
+    res.status(404).send('File not found');
+  }
+}
+);  
+
+app.all('*', (req, res) => {
+  res.status(404).send('Not Found');
+}
+);
+
+
 module.exports = app;
